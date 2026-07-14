@@ -1,0 +1,86 @@
+"use client";
+
+import React from "react";
+import { useQuizStore } from "@/core/store/quizStore";
+import { PrimaryGoal, QuizStep } from "@/core/types/quiz";
+import { OptionCard } from "../OptionCard";
+import { useTranslations } from "@/core/i18n/translations";
+import { useLocale } from "@/core/i18n/useLocale";
+import { Flame, Heart, Calendar, Brain, Activity } from "lucide-react";
+
+interface StepProps {
+  onNext: (nextStep: QuizStep) => void;
+}
+
+export function StepOnboardingBasics({ onNext }: StepProps) {
+  const { data, updateData } = useQuizStore();
+  const locale = useLocale();
+  const t = useTranslations(locale);
+
+  const options: { value: PrimaryGoal; title: string; description: string; icon: React.ReactNode }[] = [
+    {
+      value: "weight_loss",
+      title: t.quiz.steps.onboardingBasics.weightLoss.title,
+      description: t.quiz.steps.onboardingBasics.weightLoss.desc,
+      icon: <Flame className="w-5 h-5" />,
+    },
+    {
+      value: "cardio_endurance",
+      title: t.quiz.steps.onboardingBasics.cardioEndurance.title,
+      description: t.quiz.steps.onboardingBasics.cardioEndurance.desc,
+      icon: <Activity className="w-5 h-5" />,
+    },
+    {
+      value: "consistency",
+      title: t.quiz.steps.onboardingBasics.consistency.title,
+      description: t.quiz.steps.onboardingBasics.consistency.desc,
+      icon: <Calendar className="w-5 h-5" />,
+    },
+    {
+      value: "stress_relief",
+      title: t.quiz.steps.onboardingBasics.stressRelief.title,
+      description: t.quiz.steps.onboardingBasics.stressRelief.desc,
+      icon: <Brain className="w-5 h-5" />,
+    },
+    {
+      value: "general_health",
+      title: t.quiz.steps.onboardingBasics.generalHealth.title,
+      description: t.quiz.steps.onboardingBasics.generalHealth.desc,
+      icon: <Heart className="w-5 h-5" />,
+    },
+  ];
+
+  const handleSelect = (val: PrimaryGoal) => {
+    updateData({ primaryGoal: val });
+    onNext("age-selection");
+  };
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="text-center">
+        <span className="text-[10px] tracking-widest text-brand-lime font-heading font-extrabold uppercase bg-brand-lime/10 px-3 py-1 rounded-full">
+          {t.quiz.steps.onboardingBasics.badge}
+        </span>
+        <h2 className="text-xl md:text-2xl font-heading font-extrabold text-zinc-50 mt-3 leading-tight uppercase">
+          {t.quiz.steps.onboardingBasics.title}
+        </h2>
+        <p className="text-xs text-zinc-400 mt-2">
+          {t.quiz.steps.onboardingBasics.subtitle}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3 mt-2">
+        {options.map((opt) => (
+          <OptionCard
+            key={opt.value}
+            title={opt.title}
+            description={opt.description}
+            icon={opt.icon}
+            selected={data.primaryGoal === opt.value}
+            onClick={() => handleSelect(opt.value)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
