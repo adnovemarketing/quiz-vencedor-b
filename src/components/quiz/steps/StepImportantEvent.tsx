@@ -17,12 +17,78 @@ export function StepImportantEvent({ onNext }: StepProps) {
   const locale = useLocale();
   const t = useTranslations(locale);
 
-  const eventOptions: { value: ImportantEvent; label: string; desc: string }[] = [
-    { value: "wedding", label: t.quiz.steps.importantEvent.options["wedding"].label, desc: t.quiz.steps.importantEvent.options["wedding"].desc },
-    { value: "vacation", label: t.quiz.steps.importantEvent.options["vacation"].label, desc: t.quiz.steps.importantEvent.options["vacation"].desc },
-    { value: "birthday", label: t.quiz.steps.importantEvent.options["birthday"].label, desc: t.quiz.steps.importantEvent.options["birthday"].desc },
-    { value: "health_goal", label: t.quiz.steps.importantEvent.options["health_goal"].label, desc: t.quiz.steps.importantEvent.options["health_goal"].desc },
-    { value: "no_specific_date", label: t.quiz.steps.importantEvent.options["no_specific_date"].label, desc: t.quiz.steps.importantEvent.options["no_specific_date"].desc },
+  const eventOptions: { value: ImportantEvent; label: string; desc: string; image: React.ReactNode }[] = [
+    { 
+      value: "wedding", 
+      label: t.quiz.steps.importantEvent.options["wedding"].label, 
+      desc: t.quiz.steps.importantEvent.options["wedding"].desc,
+      image: (
+        <svg className="w-16 h-16 text-brand-lime opacity-80" viewBox="0 0 100 100" fill="none">
+          <circle cx="42" cy="50" r="15" stroke="currentColor" strokeWidth="2.5" />
+          <circle cx="58" cy="50" r="15" stroke="#14b8a6" strokeWidth="2.5" />
+          <path d="M42 35 C45 32, 55 32, 58 35" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      )
+    },
+    { 
+      value: "vacation", 
+      label: t.quiz.steps.importantEvent.options["vacation"].label, 
+      desc: t.quiz.steps.importantEvent.options["vacation"].desc,
+      image: (
+        <svg className="w-16 h-16 text-brand-lime opacity-80" viewBox="0 0 100 100" fill="none">
+          <path d="M50 80 C50 60, 40 40, 20 38 M50 80 C50 60, 60 40, 80 38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          {/* Folhas de Palmeira */}
+          <path d="M20 38 Q 40 32 50 35 Q 60 32 80 38" stroke="#14b8a6" strokeWidth="2" />
+          {/* Sol */}
+          <circle cx="50" cy="22" r="8" fill="#bef264" />
+        </svg>
+      )
+    },
+    { 
+      value: "birthday", 
+      label: t.quiz.steps.importantEvent.options["birthday"].label, 
+      desc: t.quiz.steps.importantEvent.options["birthday"].desc,
+      image: (
+        <svg className="w-16 h-16 text-brand-lime opacity-80" viewBox="0 0 100 100" fill="none">
+          {/* Bolo */}
+          <rect x="30" y="55" width="40" height="25" rx="4" fill="#09090b" stroke="currentColor" strokeWidth="2.5" />
+          {/* Velas */}
+          <line x1="50" y1="55" x2="50" y2="42" stroke="currentColor" strokeWidth="2" />
+          {/* Chama */}
+          <path d="M 50 42 C 48 38 52 35 50 30 C 48 35 52 38 50 42 Z" fill="#bef264" stroke="#14b8a6" strokeWidth="0.5" />
+        </svg>
+      )
+    },
+    { 
+      value: "health_goal", 
+      label: t.quiz.steps.importantEvent.options["health_goal"].label, 
+      desc: t.quiz.steps.importantEvent.options["health_goal"].desc,
+      image: (
+        <svg className="w-16 h-16 text-brand-lime opacity-80" viewBox="0 0 100 100" fill="none">
+          {/* Estetoscópio / Coração */}
+          <path d="M35 30 V50 C35 60, 65 60, 65 50 V30" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M50 58 V78 H65" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Coração */}
+          <path d="M44 26 C41 22, 35 22, 32 26 C29 30, 32 38, 44 44 C56 38, 59 30, 56 26 C53 22, 47 22, 44 26 Z" fill="#14b8a6" opacity="0.8" />
+        </svg>
+      )
+    },
+    { 
+      value: "no_specific_date", 
+      label: t.quiz.steps.importantEvent.options["no_specific_date"].label, 
+      desc: t.quiz.steps.importantEvent.options["no_specific_date"].desc,
+      image: (
+        <svg className="w-16 h-16 text-brand-lime opacity-80" viewBox="0 0 100 100" fill="none">
+          {/* Alvo com Seta */}
+          <circle cx="50" cy="50" r="22" stroke="currentColor" strokeWidth="2" />
+          <circle cx="50" cy="50" r="12" stroke="#14b8a6" strokeWidth="2.5" />
+          <circle cx="50" cy="50" r="4" fill="#bef264" />
+          {/* Flecha */}
+          <path d="M25 75 L45 55" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M40 55 H45 V60" stroke="currentColor" strokeWidth="2" />
+        </svg>
+      )
+    },
   ];
 
   const handleSelect = (value: ImportantEvent) => {
@@ -31,26 +97,31 @@ export function StepImportantEvent({ onNext }: StepProps) {
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex items-center gap-2">
-        <CalendarHeart className="w-5 h-5 text-brand-lime" />
-        <h2 className="text-sm font-heading font-extrabold text-zinc-100 uppercase tracking-wide">
-          {t.quiz.steps.importantEvent.title}
-        </h2>
+    <div className="flex flex-col gap-6">
+      <div className="text-left md:text-center px-1">
+        <div className="flex items-center md:justify-center gap-2">
+          <CalendarHeart className="w-4 h-4 text-brand-lime" />
+          <h2 className="text-sm font-heading font-extrabold text-zinc-100 uppercase tracking-wide">
+            {t.quiz.steps.importantEvent.title}
+          </h2>
+        </div>
+        <p className="text-xs text-zinc-400 leading-relaxed mt-2">
+          {t.quiz.steps.importantEvent.subtitle}
+        </p>
       </div>
-      <p className="text-xs text-zinc-400 leading-relaxed -mt-2">
-        {t.quiz.steps.importantEvent.subtitle}
-      </p>
 
-      <div className="flex flex-col gap-2.5">
-        {eventOptions.map((opt) => (
-          <OptionCard
-            key={opt.value}
-            title={opt.label}
-            description={opt.desc}
-            selected={data.importantEvent === opt.value}
-            onClick={() => handleSelect(opt.value)}
-          />
+      {/* Grid de Cards de Evento */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-1">
+        {eventOptions.map((opt, idx) => (
+          <div key={opt.value} className={idx >= 3 ? "md:col-span-1 md:first-of-type:col-start-1" : ""}>
+            <OptionCard
+              title={opt.label}
+              description={opt.desc}
+              image={opt.image}
+              selected={data.importantEvent === opt.value}
+              onClick={() => handleSelect(opt.value)}
+            />
+          </div>
         ))}
       </div>
     </div>

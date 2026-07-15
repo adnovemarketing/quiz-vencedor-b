@@ -10,6 +10,7 @@ interface OptionCardProps {
   description?: string;
   icon?: React.ReactNode;
   emoji?: string;
+  image?: React.ReactNode;
   selected: boolean;
   onClick: () => void;
   multiSelect?: boolean;
@@ -20,6 +21,7 @@ export function OptionCard({
   description,
   icon,
   emoji,
+  image,
   selected,
   onClick,
   multiSelect = false,
@@ -28,81 +30,90 @@ export function OptionCard({
     <motion.button
       type="button"
       onClick={onClick}
-      whileHover={{ scale: 1.02, translateY: -2 }}
+      whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "w-full text-left p-5 rounded-2xl border bg-zinc-900/60 backdrop-blur-sm select-none transition-all cursor-pointer flex items-center justify-between gap-4",
+        "w-full text-left rounded-2xl border bg-zinc-900/60 backdrop-blur-sm select-none transition-all cursor-pointer flex",
+        image ? "flex-col items-stretch p-0 overflow-hidden" : "items-center justify-between p-5 gap-4",
         selected
-          ? "border-brand-lime bg-zinc-900 shadow-md shadow-lime-400/5"
-          : "border-zinc-800 hover:border-zinc-700"
+          ? "border-brand-lime bg-zinc-900 shadow-lg shadow-lime-500/10"
+          : "border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/30"
       )}
     >
-      <div className="flex items-center gap-4">
-        {/* Ícone ou Emoji */}
-        {icon && (
-          <div
-            className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-              selected
-                ? "bg-brand-lime/10 text-brand-lime"
-                : "bg-zinc-950 text-zinc-400"
-            )}
-          >
-            {icon}
-          </div>
-        )}
+      {image && (
+        <div className="w-full aspect-[16/10] relative bg-zinc-950/60 overflow-hidden border-b border-zinc-800/60 flex items-center justify-center">
+          {image}
+        </div>
+      )}
 
-        {emoji && (
-          <div className="text-2xl w-10 h-10 flex items-center justify-center bg-zinc-950 rounded-xl select-none">
-            {emoji}
-          </div>
-        )}
+      <div className={cn("flex items-center justify-between gap-4 flex-1", image ? "p-4 md:p-5" : "")}>
+        <div className="flex items-center gap-3.5 flex-1">
+          {/* Ícone ou Emoji */}
+          {icon && (
+            <div
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-colors shrink-0",
+                selected
+                  ? "bg-brand-lime/10 text-brand-lime"
+                  : "bg-zinc-950 text-zinc-400"
+              )}
+            >
+              {icon}
+            </div>
+          )}
 
-        {/* Texto do Card */}
-        <div>
-          <h3
-            className={cn(
-              "text-sm font-semibold transition-colors",
-              selected ? "text-brand-lime" : "text-zinc-100"
+          {emoji && (
+            <div className="text-xl w-10 h-10 flex items-center justify-center bg-zinc-950 rounded-xl select-none shrink-0 border border-zinc-900">
+              {emoji}
+            </div>
+          )}
+
+          {/* Texto do Card */}
+          <div className="flex-1">
+            <h3
+              className={cn(
+                "text-sm font-semibold transition-colors leading-snug",
+                selected ? "text-brand-lime" : "text-zinc-100"
+              )}
+            >
+              {title}
+            </h3>
+            {description && (
+              <p className="text-xs text-zinc-400 mt-1 font-medium leading-relaxed">
+                {description}
+              </p>
             )}
-          >
-            {title}
-          </h3>
-          {description && (
-            <p className="text-xs text-zinc-400 mt-1 font-medium leading-relaxed">
-              {description}
-            </p>
+          </div>
+        </div>
+
+        {/* Caixa de seleção/Status Check */}
+        <div className="flex items-center justify-center shrink-0">
+          {multiSelect ? (
+            <div
+              className={cn(
+                "w-5 h-5 rounded-md border flex items-center justify-center transition-all",
+                selected
+                  ? "bg-brand-lime border-brand-lime text-zinc-950"
+                  : "border-zinc-700 bg-zinc-950"
+              )}
+            >
+              {selected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+            </div>
+          ) : (
+            <div
+              className={cn(
+                "w-5 h-5 rounded-full border flex items-center justify-center transition-all",
+                selected
+                  ? "border-brand-lime"
+                  : "border-zinc-700 bg-zinc-950"
+              )}
+            >
+              {selected && (
+                <div className="w-2.5 h-2.5 rounded-full bg-brand-lime" />
+              )}
+            </div>
           )}
         </div>
-      </div>
-
-      {/* Caixa de seleção/Status Check */}
-      <div className="flex items-center justify-center">
-        {multiSelect ? (
-          <div
-            className={cn(
-              "w-5 h-5 rounded-md border flex items-center justify-center transition-all",
-              selected
-                ? "bg-brand-lime border-brand-lime text-zinc-950"
-                : "border-zinc-700 bg-zinc-950"
-            )}
-          >
-            {selected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-          </div>
-        ) : (
-          <div
-            className={cn(
-              "w-5 h-5 rounded-full border flex items-center justify-center transition-all",
-              selected
-                ? "border-brand-lime"
-                : "border-zinc-700 bg-zinc-950"
-            )}
-          >
-            {selected && (
-              <div className="w-2.5 h-2.5 rounded-full bg-brand-lime" />
-            )}
-          </div>
-        )}
       </div>
     </motion.button>
   );

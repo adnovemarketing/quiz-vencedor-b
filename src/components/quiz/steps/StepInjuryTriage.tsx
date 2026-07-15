@@ -56,19 +56,52 @@ export function StepInjuryTriage({ onNext }: StepProps) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="text-center">
-        <span className="text-[10px] tracking-widest text-brand-lime font-heading font-extrabold uppercase bg-brand-lime/10 px-3 py-1 rounded-full">
-          {t.quiz.steps.injuryTriage.badge}
-        </span>
-        <h2 className="text-xl md:text-2xl font-heading font-extrabold text-zinc-50 mt-3 leading-tight uppercase">
-          {t.quiz.steps.injuryTriage.title}
-        </h2>
-        <p className="text-xs text-zinc-400 mt-2">
+      {/* Imagem/Ilustração Superior (Layout B) */}
+      <div className="w-full h-28 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 overflow-hidden relative flex items-center justify-between p-6 select-none">
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-lime/5 via-transparent to-brand-teal/5" />
+        <div className="flex flex-col gap-1 relative z-10">
+          <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-wider bg-brand-lime/10 px-2 py-0.5 rounded w-fit">
+            {locale === "pt-br" ? "PROTEÇÃO ARTICULAR" : "JOINT PROTECTION"}
+          </span>
+          <p className="text-[11px] text-zinc-400 font-medium max-w-[200px] mt-1 leading-normal">
+            {locale === "pt-br" ? "Mapeamos áreas sensíveis para adaptar a velocidade de subida e evitar impactos." : "Modifying incline and deck compression algorithms to secure sensitive joint structures."}
+          </p>
+        </div>
+
+        {/* SVG Silhueta Corporal com Articulações */}
+        <svg className="w-24 h-24 relative z-10 text-zinc-600" viewBox="0 0 100 100" fill="none">
+          {/* Silhueta Humana */}
+          <path d="M50 12 C53 12, 55 10, 55 7 C55 4, 53 2, 50 2 C47 2, 45 4, 45 7 C45 10, 47 12, 50 12 Z M50 14 C44 14, 38 18, 38 25 V45 H44 V80 H47 V98 H53 V80 H56 V45 H62 V25 C62 18, 56 14, 50 14 Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+          
+          {/* Marcador Coluna/Lombar */}
+          <circle cx="50" cy="36" r="3.5" stroke="#14b8a6" strokeWidth="1.5" fill="#09090b" className="animate-pulse" />
+          <line x1="50" y1="36" x2="68" y2="36" stroke="#14b8a6" strokeWidth="1" strokeDasharray="2 2" />
+          <text x="72" y="39" fill="#14b8a6" fontSize="7" fontWeight="bold">Lombar</text>
+
+          {/* Marcador Joelhos */}
+          <circle cx="44" cy="62" r="3.5" stroke="#bef264" strokeWidth="1.5" fill="#09090b" />
+          <circle cx="56" cy="62" r="3.5" stroke="#bef264" strokeWidth="1.5" fill="#09090b" />
+          <line x1="56" y1="62" x2="72" y2="62" stroke="#bef264" strokeWidth="1" strokeDasharray="2 2" />
+          <text x="76" y="65" fill="#bef264" fontSize="7" fontWeight="bold">Joelho</text>
+
+          {/* Marcador Tornozelo */}
+          <circle cx="47" cy="90" r="3" stroke="#14b8a6" strokeWidth="1.5" fill="#09090b" />
+          <circle cx="53" cy="90" r="3" stroke="#14b8a6" strokeWidth="1.5" fill="#09090b" />
+        </svg>
+      </div>
+
+      <div className="flex flex-col gap-1 px-1">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-heading font-extrabold text-zinc-100 uppercase tracking-wide">
+            {t.quiz.steps.injuryTriage.title}
+          </h2>
+        </div>
+        <p className="text-xs text-zinc-400 leading-relaxed mt-1">
           {t.quiz.steps.injuryTriage.subtitle}
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 mt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
         <OptionCard
           title={t.quiz.steps.injuryTriage.knees.title}
           description={t.quiz.steps.injuryTriage.knees.desc}

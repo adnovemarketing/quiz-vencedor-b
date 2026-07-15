@@ -5,7 +5,7 @@ import { useQuizNavigation } from "@/core/hooks/useQuizNavigation";
 import { ProgressBar } from "./ProgressBar";
 import { QuizLayout } from "./QuizLayout";
 import { useLocale } from "@/core/i18n/useLocale";
-import { useTranslations } from "@/core/i18n/translations";
+import { cn } from "@/lib/utils";
 
 // Importações dos Componentes Físicos de Etapa
 import { StepOnboardingBasics } from "./steps/StepOnboardingBasics";
@@ -38,7 +38,35 @@ export function QuizContainer() {
   } = useQuizNavigation();
 
   const locale = useLocale();
-  const t = useTranslations(locale);
+
+  // Dynamic card widths to support side-by-side structures on desktop
+  const getCardWidthClass = () => {
+    switch (currentStep) {
+      case "onboarding-basics":
+      case "treadmill-frequency":
+      case "sleep-quality":
+      case "water-intake":
+      case "daily-nutrition":
+      case "mindset-blockers":
+      case "email-capture":
+        return "max-w-3xl"; // Layout A: Lateral right image on desktop
+      case "educational-transition":
+        return "max-w-4xl"; // Wide educational layout
+      case "age-selection":
+      case "cardio-level":
+      case "daily-activity":
+      case "injury-triage":
+        return "max-w-2xl"; // Layout B: Header image/grid options
+      case "gender-selection":
+      case "important-event":
+        return "max-w-3xl"; // Layout C: Cards in grids with images
+      case "incline-profile":
+      case "antropometria":
+        return "max-w-2xl"; // Layout D: Side icon/smaller forms
+      default:
+        return "max-w-md"; // Fallback standard
+    }
+  };
 
   // Mapeador do motor de renderização das etapas reais do quiz
   const renderStepContent = () => {
@@ -102,7 +130,10 @@ export function QuizContainer() {
 
       {/* Container de transição de tela animada com layout centralizado */}
       <QuizLayout stepKey={currentStep}>
-        <div className="w-full p-6 md:p-8 bg-zinc-900/40 rounded-3xl border border-zinc-900 max-w-md mx-auto shadow-2xl">
+        <div className={cn(
+          "w-full p-5 md:p-8 bg-zinc-900/30 rounded-3xl border border-zinc-900/60 mx-auto shadow-2xl transition-all duration-300",
+          getCardWidthClass()
+        )}>
           {renderStepContent()}
         </div>
       </QuizLayout>

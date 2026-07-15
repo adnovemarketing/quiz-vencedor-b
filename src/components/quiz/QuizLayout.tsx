@@ -10,7 +10,7 @@ interface QuizLayoutProps {
 
 export function QuizLayout({ children, stepKey }: QuizLayoutProps) {
   return (
-    <main className="flex-1 flex flex-col justify-center items-center px-4 py-8 md:py-12 max-w-lg w-full mx-auto">
+    <main className="flex-1 flex flex-col justify-center items-center px-4 py-8 md:py-12 max-w-4xl w-full mx-auto">
       <AnimatePresence mode="wait">
         <motion.div
           key={stepKey}

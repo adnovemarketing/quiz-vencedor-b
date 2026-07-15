@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useQuizStore } from "@/core/store/quizStore";
 import { Header } from "@/components/common/Header";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,9 @@ import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "@/core/i18n/translations";
 import {
   Activity,
-  Heart,
   Droplet,
   Compass,
   ArrowRight,
-  TrendingDown,
   Calendar,
   Flame,
   AlertTriangle,
@@ -26,17 +24,14 @@ export default function ReportPage() {
   const params = useParams();
   const locale = (params.locale as string) || "en-gb";
   const t = useTranslations(locale);
-  const [isRedirecting, setIsRedirecting] = useState(false);
-
   // Redireciona de volta para o quiz se não houver dados preenchidos
   useEffect(() => {
     if (!data.weight || !data.height) {
-      setIsRedirecting(true);
       router.replace(`/${locale}/quiz`);
     }
   }, [data, router, locale]);
 
-  if (isRedirecting || !data.weight || !data.height) {
+  if (!data.weight || !data.height) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center py-12">
         <div className="w-10 h-10 border-4 border-zinc-800 border-t-brand-lime rounded-full animate-spin" />
@@ -150,59 +145,71 @@ export default function ReportPage() {
 
         {/* Resumo Biométrico */}
         <div className="grid grid-cols-2 gap-3.5">
-          <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-2xl flex flex-col justify-between">
+          <div className="bg-zinc-900/40 border border-zinc-900/80 p-4 rounded-2xl flex flex-col justify-between hover:border-zinc-800 transition-colors">
             <div className="flex items-center gap-2 text-zinc-500">
-              <Activity className="w-3.5 h-3.5" />
+              <Activity className="w-3.5 h-3.5 text-brand-lime" />
               <span className="text-[9px] font-bold uppercase tracking-wider">{t.report.bodyStatus}</span>
             </div>
-            <div className="mt-3">
-              <span className="text-2xl font-heading font-black text-zinc-100">{imc}</span>
-              <span className={cn("text-[9px] font-extrabold uppercase tracking-wide block mt-0.5", imcCatColor)}>
-                {imcCatLabel}
-              </span>
+            <div className="mt-3 flex items-baseline justify-between">
+              <div>
+                <span className="text-2xl font-heading font-black text-zinc-100">{imc}</span>
+                <span className={cn("text-[9px] font-extrabold uppercase tracking-wide block mt-0.5", imcCatColor)}>
+                  {imcCatLabel}
+                </span>
+              </div>
+              <span className="text-[10px] text-zinc-600 font-extrabold font-heading">IMC</span>
             </div>
           </div>
 
-          <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-2xl flex flex-col justify-between">
+          <div className="bg-zinc-900/40 border border-zinc-900/80 p-4 rounded-2xl flex flex-col justify-between hover:border-zinc-800 transition-colors">
             <div className="flex items-center gap-2 text-zinc-500">
-              <Flame className="w-3.5 h-3.5" />
+              <Flame className="w-3.5 h-3.5 text-brand-lime" />
               <span className="text-[9px] font-bold uppercase tracking-wider">{t.report.calorieTarget}</span>
             </div>
             <div className="mt-3">
-              <span className="text-sm md:text-base font-heading font-black text-zinc-100 block">
+              <span className="text-xs font-heading font-black text-zinc-100 block leading-tight">
                 {getCalorieTarget()}
               </span>
-              <span className="text-[9px] font-bold text-brand-teal uppercase tracking-wide block mt-1">
+              <span className="text-[9px] font-bold text-brand-teal uppercase tracking-wide block mt-1.5">
                 {t.report.targetRecommended}
               </span>
             </div>
           </div>
 
-          <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-2xl flex flex-col justify-between">
+          <div className="bg-zinc-900/40 border border-zinc-900/80 p-4 rounded-2xl flex flex-col justify-between hover:border-zinc-800 transition-colors">
             <div className="flex items-center gap-2 text-zinc-500">
-              <Droplet className="w-3.5 h-3.5" />
+              <Droplet className="w-3.5 h-3.5 text-brand-teal" />
               <span className="text-[9px] font-bold uppercase tracking-wider">{t.report.hydration}</span>
             </div>
-            <div className="mt-3">
-              <span className="text-base font-heading font-black text-zinc-100 block">
-                {waterLiters}
-              </span>
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wide block mt-0.5">
-                {t.report.recommendedCups.replace("{cups}", waterCups)}
-              </span>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <div>
+                <span className="text-base font-heading font-black text-zinc-100 block">
+                  {waterLiters}
+                </span>
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wide block mt-0.5">
+                  {t.report.recommendedCups.replace("{cups}", waterCups)}
+                </span>
+              </div>
+              
+              {/* Copinhos de água visuais */}
+              <div className="flex gap-0.5 items-end h-5">
+                <div className="w-1.5 h-4 bg-brand-teal rounded-t-sm" />
+                <div className="w-1.5 h-4.5 bg-brand-teal rounded-t-sm" />
+                <div className="w-1.5 h-5 bg-brand-teal rounded-t-sm animate-pulse" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-2xl flex flex-col justify-between">
+          <div className="bg-zinc-900/40 border border-zinc-900/80 p-4 rounded-2xl flex flex-col justify-between hover:border-zinc-800 transition-colors">
             <div className="flex items-center gap-2 text-zinc-500">
-              <Calendar className="w-3.5 h-3.5" />
+              <Calendar className="w-3.5 h-3.5 text-brand-lime" />
               <span className="text-[9px] font-bold uppercase tracking-wider">{t.report.targetForecast}</span>
             </div>
             <div className="mt-3">
               <span className="text-xs font-heading font-black text-brand-lime block leading-normal">
                 {dateString}
               </span>
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wide block mt-0.5">
+              <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wide block mt-0.5">
                 {t.report.estimatedInWeeks.replace("{weeks}", String(weeks))}
               </span>
             </div>
@@ -211,11 +218,15 @@ export default function ReportPage() {
 
         {/* Bloco de Informações sobre Lesões */}
         {(data.jointSensitivities.knees || data.jointSensitivities.ankles || data.jointSensitivities.lowerBack) && (
-          <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-2xl flex gap-3.5">
-            <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+          <div className="bg-amber-500/5 border border-amber-500/10 p-4.5 rounded-2xl flex gap-4 items-center">
+            <div className="p-3 bg-amber-500/10 rounded-xl shrink-0 border border-amber-500/20">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+            </div>
             <div>
-              <h3 className="text-xs font-bold text-zinc-200">{t.report.jointSensitivityActive}</h3>
-              <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+              <h3 className="text-xs font-bold text-zinc-200 uppercase tracking-wide flex items-center gap-1.5">
+                {t.report.jointSensitivityActive}
+              </h3>
+              <p className="text-[10px] text-zinc-400 mt-1 leading-relaxed">
                 {t.report.jointSensitivityDesc}
               </p>
             </div>
@@ -223,7 +234,9 @@ export default function ReportPage() {
         )}
 
         {/* Grade Curricular do Plano de 4 Semanas */}
-        <div className="bg-zinc-900/20 border border-zinc-900 p-5 rounded-3xl flex flex-col gap-4">
+        <div className="bg-zinc-900/20 border border-zinc-900 p-5 rounded-3xl flex flex-col gap-4 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-teal/5 rounded-full blur-3xl pointer-events-none" />
+          
           <div>
             <span className="text-[9px] font-bold text-brand-teal uppercase tracking-widest block">{t.report.planTitle}</span>
             <h2 className="text-lg font-heading font-extrabold text-zinc-50 mt-1">
@@ -234,11 +247,15 @@ export default function ReportPage() {
             </p>
           </div>
 
-          {/* Cards de Semana */}
-          <div className="flex flex-col gap-3 mt-2">
+          {/* Cards de Semana com linha conectora (Linha de Tempo) */}
+          <div className="flex flex-col gap-4 mt-2 relative pl-3">
+            {/* Linha vertical conectora */}
+            <div className="absolute left-7 top-6 bottom-6 w-0.5 bg-gradient-to-b from-brand-lime via-brand-teal to-zinc-900 pointer-events-none" />
+
+            {/* Cards de Semana */}
             {plan.weeks.map((wk, idx) => (
-              <div key={idx} className="bg-zinc-950 border border-zinc-900 p-4 rounded-2xl flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-zinc-900 flex flex-col items-center justify-center shrink-0 border border-zinc-800 text-[10px] font-heading font-black text-brand-lime">
+              <div key={idx} className="bg-zinc-950 border border-zinc-900/80 p-4 rounded-2xl flex gap-4 relative z-10 transition-all hover:bg-zinc-900/40 hover:-translate-x-1 duration-200">
+                <div className="w-10 h-10 rounded-xl bg-zinc-900 flex flex-col items-center justify-center shrink-0 border border-zinc-800 text-[10px] font-heading font-black text-brand-lime shadow-inner shadow-lime-500/5">
                   <span>{locale === "pt-br" ? "S" : "W"}</span>
                   <span>0{idx+1}</span>
                 </div>
