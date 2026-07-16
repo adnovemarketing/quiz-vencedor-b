@@ -143,11 +143,12 @@ export function QuizContainer() {
       case "email-capture":
         return "max-w-3xl"; // Layout A: Lateral right image on desktop
       case "educational-transition":
-        return "max-w-4xl"; // Wide educational layout
-      case "age-selection":
       case "cardio-level":
       case "daily-activity":
       case "injury-triage":
+      case "report-projection":
+        return "max-w-4xl"; // Wide educational layout and side-image steps
+      case "age-selection":
         return "max-w-2xl"; // Layout B: Header image/grid options
       case "gender-selection":
       case "important-event":

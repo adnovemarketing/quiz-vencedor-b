@@ -43,9 +43,9 @@ export function StepReportProjection({ onNext }: StepProps) {
   const midWeight = parseFloat(((startWeight + endWeight) / 2 + 1.5).toFixed(1));
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
       {/* Coluna Esquerda: Dados e Gráfico */}
-      <div className="md:col-span-7 flex flex-col gap-6">
+      <div className="flex-1 min-w-0 flex flex-col gap-6">
         <div className="text-left md:text-center px-1">
           <span className="text-[10px] tracking-widest text-brand-lime font-heading font-extrabold uppercase bg-brand-lime/10 px-3 py-1 rounded-full">
             {t.transitions.reportPreview.badge}
@@ -173,18 +173,19 @@ export function StepReportProjection({ onNext }: StepProps) {
         </Button>
       </div>
 
-      {/* Coluna Direita: Ilustração Visual (Layout D) */}
-      <div className="md:col-span-5 hidden md:flex flex-col justify-end p-6 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
-        <Image
-          src={VISUAL_ASSETS.results.resultProjection}
-          alt={locale === "pt-br" ? "Sua projeção de perda de peso saudável baseada no método da esteira" : "Your healthy weight loss projection based on treadmill walking milestones"}
-          fill
-          sizes="33vw"
-          priority
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
-        <div className="relative z-10 flex flex-col gap-1">
+      {/* Coluna Direita: Ilustração Visual — imagem com legenda abaixo */}
+      <div className="hidden lg:flex flex-col w-56 xl:w-64 shrink-0 rounded-2xl border border-zinc-900/60 overflow-hidden bg-zinc-950/40 select-none group">
+        <div className="w-full aspect-[4/3] relative overflow-hidden">
+          <Image
+            src={VISUAL_ASSETS.results.resultProjection}
+            alt={locale === "pt-br" ? "Sua projeção de perda de peso saudável baseada no método da esteira" : "Your healthy weight loss projection based on treadmill walking milestones"}
+            fill
+            sizes="280px"
+            priority
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-3 flex flex-col gap-0.5 border-t border-zinc-900 bg-zinc-900/20">
           <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest">
             {locale === "pt-br" ? "PROJEÇÃO DE RESULTADOS" : "TARGET TIMELINE"}
           </span>

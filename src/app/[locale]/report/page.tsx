@@ -269,7 +269,7 @@ export default function ReportPage() {
           </div>
 
           {/* Imagem Ilustrativa do Plano */}
-          <div className="w-full h-36 relative rounded-2xl overflow-hidden border border-zinc-900/80 mt-1">
+          <div className="w-full h-72 relative rounded-2xl overflow-hidden border border-zinc-900/80 mt-1 bg-zinc-950">
             <Image
               src={
                 plan.name === t.report.inclineHiitName
@@ -279,7 +279,7 @@ export default function ReportPage() {
               alt={locale === "pt-br" ? `Ilustração do treino ${plan.name}` : `Illustration of the ${plan.name} treadmill plan`}
               fill
               sizes="(max-width: 768px) 100vw, 512px"
-              className="object-cover"
+              className="object-contain object-top"
             />
           </div>
 

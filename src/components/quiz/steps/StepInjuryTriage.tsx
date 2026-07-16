@@ -57,9 +57,9 @@ export function StepInjuryTriage({ onNext }: StepProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
       {/* Coluna Esquerda: Texto, Opções e CTA */}
-      <div className="md:col-span-7 flex flex-col gap-5">
+      <div className="flex-1 min-w-0 flex flex-col gap-5">
         <div className="flex flex-col gap-1 px-1">
           <h2 className="text-sm font-heading font-extrabold text-zinc-100 uppercase tracking-wide">
             {t.quiz.steps.injuryTriage.title}
@@ -112,17 +112,18 @@ export function StepInjuryTriage({ onNext }: StepProps) {
         </Button>
       </div>
 
-      {/* Coluna Direita: Ilustração de Triagem e Saúde (Layout D) */}
-      <div className="md:col-span-5 hidden md:flex flex-col justify-end p-6 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
-        <Image
-          src={VISUAL_ASSETS.health.consultation}
-          alt={locale === "pt-br" ? "Proteção e Triagem Articular" : "Joint Protection and Triage"}
-          fill
-          sizes="33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
-        <div className="relative z-10 flex flex-col gap-1">
+      {/* Coluna Direita: Ilustração contextual — imagem própria + legenda abaixo */}
+      <div className="hidden lg:flex flex-col w-56 xl:w-64 shrink-0 rounded-2xl border border-zinc-900/60 overflow-hidden bg-zinc-950/40 select-none group">
+        <div className="relative h-52 xl:h-60 overflow-hidden">
+          <Image
+            src={VISUAL_ASSETS.health.consultation}
+            alt={locale === "pt-br" ? "Proteção e Triagem Articular" : "Joint Protection and Triage"}
+            fill
+            sizes="280px"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-3 flex flex-col gap-0.5 border-t border-zinc-900 bg-zinc-900/20">
           <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest">
             {locale === "pt-br" ? "PROTEÇÃO ARTICULAR" : "JOINT PROTECTION"}
           </span>

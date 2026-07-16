@@ -26,7 +26,7 @@ export function StepAgeSelection({ onNext }: StepProps) {
       desc: t.quiz.steps.ageSelection.options["18_24"].desc,
       image: (
         <Image
-          src={VISUAL_ASSETS.demographics.age30_39}
+          src={VISUAL_ASSETS.demographics.age18To24}
           alt={t.quiz.steps.ageSelection.options["18_24"].label}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"

@@ -1,6 +1,7 @@
 // Manifesto centralizado e tipado para os assets estáticos do Quiz
 export const VISUAL_ASSETS = {
   demographics: {
+    age18To24: "/assets/images/demographics/age-20-29-uk.webp.png",
     age30_39: "/assets/images/demographics/age-30-39-uk.webp.png",
     age40_49: "/assets/images/demographics/age-40-49-uk.webp.png",
     age50_59: "/assets/images/demographics/age-50-59-uk.webp.png",
