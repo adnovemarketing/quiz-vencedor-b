@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { calculateTargetDate, calculateIMC, getIMCCategoryKey, getIMCCategoryColor } from "@/core/utils/calculations";
 import { useTranslations } from "@/core/i18n/translations";
 import { useLocale } from "@/core/i18n/useLocale";
-import { TrendingDown, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ResultImage } from "@/components/ui/ImageWrapper";
 
 interface StepProps {
   onNext: (nextStep: QuizStep) => void;
@@ -59,62 +60,79 @@ export function StepReportProjection({ onNext }: StepProps) {
         </h3>
 
         {/* Gráfico SVG de Projeção */}
-        <div className="w-full h-32 bg-zinc-900/20 border border-zinc-900 rounded-xl relative overflow-hidden mt-2 p-2 flex flex-col justify-end">
-          {/* Grid lines */}
-          <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none opacity-20">
-            <div className="border-b border-zinc-800 w-full" />
-            <div className="border-b border-zinc-800 w-full" />
-            <div className="border-b border-zinc-800 w-full" />
-          </div>
+        <ResultImage
+          src="/assets/results/progress-graph.webp"
+          alt="Weight projection graph"
+          fileName="results/progress-graph.webp"
+          placeholderText={locale === "pt-br" ? "Gráfico de projeção de perda de peso" : "Weight projection curve chart"}
+          aiPrompt="Minimalist high fidelity vector line graph showing weight dropping from starting weight to goal weight, glowing lime green curve, dark theme."
+          fallbackSvg={
+            <div className="w-full h-full relative overflow-hidden p-3 flex flex-col justify-end text-left">
+              {/* Grid lines */}
+              <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none opacity-20">
+                <div className="border-b border-zinc-800 w-full" />
+                <div className="border-b border-zinc-800 w-full" />
+                <div className="border-b border-zinc-800 w-full" />
+              </div>
 
-          {/* Curva SVG */}
-          <svg className="w-full h-24 overflow-visible z-10" viewBox="0 0 300 100" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#bef264" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
-            {/* Área sombreada */}
-            <path
-              d="M 0 10 Q 150 40 300 80 L 300 100 L 0 100 Z"
-              fill="url(#gradient)"
-            />
-            {/* Linha principal */}
-            <path
-              d="M 0 10 Q 150 40 300 80"
-              fill="none"
-              stroke="#bef264"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-            />
-            {/* Pontos indicadores */}
-            <circle cx="0" cy="10" r="5" fill="#bef264" stroke="#09090b" strokeWidth="2" />
-            <circle cx="150" cy="40" r="5" fill="#14b8a6" stroke="#09090b" strokeWidth="2" />
-            <circle cx="300" cy="80" r="5" fill="#14b8a6" stroke="#09090b" strokeWidth="2" />
-          </svg>
+              {/* Curva SVG */}
+              <svg className="w-full h-24 overflow-visible z-10 drop-shadow-[0_0_15px_rgba(190,242,100,0.25)]" viewBox="0 0 300 100" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#bef264" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.0" />
+                  </linearGradient>
+                  <filter id="neonGlow">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+                {/* Área sombreada */}
+                <path
+                  d="M 0 10 Q 150 40 300 80 L 300 100 L 0 100 Z"
+                  fill="url(#gradient)"
+                />
+                {/* Linha principal */}
+                <path
+                  d="M 0 10 Q 150 40 300 80"
+                  fill="none"
+                  stroke="#bef264"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  filter="url(#neonGlow)"
+                />
+                {/* Pontos indicadores */}
+                <circle cx="0" cy="10" r="5" fill="#bef264" stroke="#09090b" strokeWidth="2" />
+                <circle cx="150" cy="40" r="5" fill="#14b8a6" stroke="#09090b" strokeWidth="2" />
+                <circle cx="300" cy="80" r="5" fill="#14b8a6" stroke="#09090b" strokeWidth="2" />
+              </svg>
 
-          {/* Rótulos do Gráfico */}
-          <div className="flex justify-between items-center text-[9px] text-zinc-500 font-bold tracking-wider px-1 mt-2 z-20">
-            <div className="flex flex-col items-start">
-              <span>{locale === "pt-br" ? "HOJE" : "TODAY"}</span>
-              <span className="text-zinc-300">{startWeight} {unit}</span>
+              {/* Rótulos do Gráfico */}
+              <div className="flex justify-between items-center text-[9px] text-zinc-500 font-bold tracking-wider px-1 mt-3 z-20">
+                <div className="flex flex-col items-start">
+                  <span>{locale === "pt-br" ? "HOJE" : "TODAY"}</span>
+                  <span className="text-zinc-300">{startWeight} {unit}</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span>{locale === "pt-br" ? "METADE" : "MIDPOINT"}</span>
+                  <span className="text-zinc-300">{midWeight} {unit}</span>
+                </div>
+                <div className="flex flex-col items-end">
+                  <span>{locale === "pt-br" ? "META" : "TARGET"}</span>
+                  <span className="text-brand-lime font-black">{endWeight} {unit}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col items-center">
-              <span>{locale === "pt-br" ? "METADE" : "MIDPOINT"}</span>
-              <span className="text-zinc-300">{midWeight} {unit}</span>
-            </div>
-            <div className="flex flex-col items-end">
-              <span>{locale === "pt-br" ? "META" : "TARGET"}</span>
-              <span className="text-brand-lime font-black">{endWeight} {unit}</span>
-            </div>
-          </div>
-        </div>
+          }
+        />
       </div>
 
       {/* Caixa de Métricas Adicionais */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-zinc-900/30 border border-zinc-900/60 p-4 rounded-xl flex flex-col justify-center">
+      <div className="grid grid-cols-2 gap-3.5">
+        <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-xl flex flex-col justify-center transition-all hover:bg-zinc-900/60 hover:scale-[1.01] duration-200">
           <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">
             {locale === "pt-br" ? "Seu IMC Atual" : "Your Current BMI"}
           </span>
@@ -124,7 +142,7 @@ export function StepReportProjection({ onNext }: StepProps) {
           </span>
         </div>
 
-        <div className="bg-zinc-900/30 border border-zinc-900/60 p-4 rounded-xl flex flex-col justify-center">
+        <div className="bg-zinc-900/40 border border-zinc-900 p-4 rounded-xl flex flex-col justify-center transition-all hover:bg-zinc-900/60 hover:scale-[1.01] duration-200">
           <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">
             {locale === "pt-br" ? "Período Estimado" : "Estimated Time"}
           </span>

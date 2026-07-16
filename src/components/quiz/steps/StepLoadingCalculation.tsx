@@ -92,7 +92,7 @@ export function StepLoadingCalculation({ onNext }: StepProps) {
       {/* Progress Circle & Percent */}
       <div className="flex-1 flex flex-col items-center justify-center my-6 relative">
         <div className="relative w-28 h-28 flex items-center justify-center">
-          <svg className="w-full h-full -rotate-90">
+          <svg className="w-full h-full -rotate-90 drop-shadow-[0_0_20px_rgba(190,242,100,0.2)]">
             <circle
               cx="56"
               cy="56"
@@ -110,7 +110,7 @@ export function StepLoadingCalculation({ onNext }: StepProps) {
               strokeDashoffset={2 * Math.PI * 48 * (1 - progress / 100)}
             />
           </svg>
-          <span className="absolute text-xl font-heading font-extrabold text-zinc-50">
+          <span className="absolute text-xl font-heading font-extrabold text-zinc-50 tracking-wider">
             {progress}%
           </span>
         </div>

@@ -5,7 +5,7 @@ const locales = ['en-gb', 'pt-br'];
 const defaultLocale = 'en-gb';
 
 export function proxy(request: NextRequest) {
-  const { pathname, search } = request.nextUrl;
+  const { pathname } = request.nextUrl;
 
   // 1. Verificar se a URL já possui localidade válida
   const pathnameHasLocale = locales.some(

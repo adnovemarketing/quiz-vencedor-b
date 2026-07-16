@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/core/i18n/translations";
-import { getMarketConfig } from "@/core/i18n/config";
 import { ArrowRight, Flame, Shield, Star, Trophy, Zap } from "lucide-react";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
