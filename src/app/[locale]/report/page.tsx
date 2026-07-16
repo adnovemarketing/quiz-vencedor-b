@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import Image from "next/image";
 import { useQuizStore } from "@/core/store/quizStore";
 import { Header } from "@/components/common/Header";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { VISUAL_ASSETS } from "@/config/visualAssets";
+import { trackEvent } from "@/core/utils/analytics";
+import { CRO_FLAGS } from "@/config/flags";
 
 export default function ReportPage() {
   const { data } = useQuizStore();
@@ -28,6 +32,8 @@ export default function ReportPage() {
   useEffect(() => {
     if (!data.weight || !data.height) {
       router.replace(`/${locale}/quiz`);
+    } else {
+      trackEvent("final_result_viewed", { locale });
     }
   }, [data, router, locale]);
 
@@ -143,6 +149,21 @@ export default function ReportPage() {
           </p>
         </div>
 
+        {/* CTA âncora para utilizadores de alta intenção */}
+        {CRO_FLAGS.reportTopCtaAnchor && (
+          <button
+            onClick={() => {
+              trackEvent("checkout_clicked", { source: "report_top_anchor", locale });
+              router.push(`/${locale}/checkout`);
+            }}
+            className="w-full border border-brand-lime/30 text-brand-lime hover:bg-brand-lime/10 font-heading font-bold text-xs tracking-wide py-3 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+            aria-label={locale === "pt-br" ? "Desbloquear plano completo" : "Unlock full plan"}
+          >
+            {t.report.ctaButton}
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        )}
+
         {/* Resumo Biométrico */}
         <div className="grid grid-cols-2 gap-3.5">
           <div className="bg-zinc-900/40 border border-zinc-900/80 p-4 rounded-2xl flex flex-col justify-between hover:border-zinc-800 transition-colors">
@@ -247,6 +268,21 @@ export default function ReportPage() {
             </p>
           </div>
 
+          {/* Imagem Ilustrativa do Plano */}
+          <div className="w-full h-48 relative rounded-2xl overflow-hidden border border-zinc-900/80 mt-1 bg-white">
+            <Image
+              src={
+                plan.name === t.report.inclineHiitName
+                  ? VISUAL_ASSETS.treadmill.inclineWalking
+                  : VISUAL_ASSETS.treadmill.experienceMan
+              }
+              alt={locale === "pt-br" ? `Ilustração do treino ${plan.name}` : `Illustration of the ${plan.name} treadmill plan`}
+              fill
+              sizes="(max-width: 768px) 100vw, 512px"
+              className="object-contain"
+            />
+          </div>
+
           {/* Cards de Semana com linha conectora (Linha de Tempo) */}
           <div className="flex flex-col gap-4 mt-2 relative pl-3">
             {/* Linha vertical conectora */}
@@ -307,7 +343,10 @@ export default function ReportPage() {
           </div>
 
           <Button
-            onClick={() => router.push(`/${locale}/checkout`)}
+            onClick={() => {
+              trackEvent("checkout_clicked", { source: "report_bottom_cta", locale });
+              router.push(`/${locale}/checkout`);
+            }}
             className="w-full bg-brand-lime text-zinc-950 hover:bg-brand-lime-hover font-heading font-bold text-sm tracking-wide py-6 rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-2"
           >
             {t.report.ctaButton}

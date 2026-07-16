@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useQuizStore } from "@/core/store/quizStore";
 import { QuizStep, AgeGroup } from "@/core/types/quiz";
 import { OptionCard } from "../OptionCard";
 import { useTranslations } from "@/core/i18n/translations";
 import { useLocale } from "@/core/i18n/useLocale";
-import { Calendar, Activity, Zap, Shield, Heart, ShieldAlert } from "lucide-react";
+import { Calendar } from "lucide-react";
+import { VISUAL_ASSETS } from "@/config/visualAssets";
 
 interface StepProps {
   onNext: (nextStep: QuizStep) => void;
@@ -17,36 +19,76 @@ export function StepAgeSelection({ onNext }: StepProps) {
   const locale = useLocale();
   const t = useTranslations(locale);
 
-  const ageOptions: { value: AgeGroup; label: string; desc: string; icon: React.ReactNode }[] = [
+  const ageOptions: { value: AgeGroup; label: string; desc: string; image: React.ReactNode }[] = [
     { 
       value: "18_24", 
       label: t.quiz.steps.ageSelection.options["18_24"].label, 
       desc: t.quiz.steps.ageSelection.options["18_24"].desc,
-      icon: <Activity className="w-4 h-4 text-brand-lime" />
+      image: (
+        <Image
+          src={VISUAL_ASSETS.demographics.age18To24}
+          alt={t.quiz.steps.ageSelection.options["18_24"].label}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover"
+        />
+      )
     },
     { 
       value: "25_34", 
       label: t.quiz.steps.ageSelection.options["25_34"].label, 
       desc: t.quiz.steps.ageSelection.options["25_34"].desc,
-      icon: <Zap className="w-4 h-4 text-brand-lime" />
+      image: (
+        <Image
+          src={VISUAL_ASSETS.demographics.age30_39}
+          alt={t.quiz.steps.ageSelection.options["25_34"].label}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover"
+        />
+      )
     },
     { 
       value: "35_44", 
       label: t.quiz.steps.ageSelection.options["35_44"].label, 
       desc: t.quiz.steps.ageSelection.options["35_44"].desc,
-      icon: <Shield className="w-4 h-4 text-brand-lime" />
+      image: (
+        <Image
+          src={VISUAL_ASSETS.demographics.age40_49}
+          alt={t.quiz.steps.ageSelection.options["35_44"].label}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover"
+        />
+      )
     },
     { 
       value: "45_54", 
       label: t.quiz.steps.ageSelection.options["45_54"].label, 
       desc: t.quiz.steps.ageSelection.options["45_54"].desc,
-      icon: <Heart className="w-4 h-4 text-brand-lime" />
+      image: (
+        <Image
+          src={VISUAL_ASSETS.demographics.age50_59}
+          alt={t.quiz.steps.ageSelection.options["45_54"].label}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover"
+        />
+      )
     },
     { 
       value: "55_plus", 
       label: t.quiz.steps.ageSelection.options["55_plus"].label, 
       desc: t.quiz.steps.ageSelection.options["55_plus"].desc,
-      icon: <ShieldAlert className="w-4 h-4 text-brand-lime" />
+      image: (
+        <Image
+          src={VISUAL_ASSETS.demographics.age60_plus}
+          alt={t.quiz.steps.ageSelection.options["55_plus"].label}
+          fill
+          sizes="(max-width: 768px) 100vw, 100vw"
+          className="object-cover"
+        />
+      )
     },
   ];
 
@@ -98,7 +140,7 @@ export function StepAgeSelection({ onNext }: StepProps) {
             <OptionCard
               title={opt.label}
               description={opt.desc}
-              icon={opt.icon}
+              image={opt.image}
               selected={data.ageGroup === opt.value}
               onClick={() => handleSelect(opt.value)}
             />

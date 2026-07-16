@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useQuizStore } from "@/core/store/quizStore";
 import { QuizStep, PreferredWorkoutTime } from "@/core/types/quiz";
 import { Check } from "lucide-react";
@@ -9,6 +10,7 @@ import { OptionCard } from "../OptionCard";
 import { useTranslations } from "@/core/i18n/translations";
 import { useLocale } from "@/core/i18n/useLocale";
 import { motion, AnimatePresence } from "framer-motion";
+import { VISUAL_ASSETS } from "@/config/visualAssets";
 
 interface StepProps {
   onNext: (nextStep: QuizStep) => void;
@@ -76,80 +78,103 @@ export function StepLoadingCalculation({ onNext }: StepProps) {
   };
 
   return (
-    <div className="relative min-h-[420px] flex flex-col justify-between py-6">
-      {/* Header Loading */}
-      <div className="text-center">
-        <h2 className="text-xl font-heading font-extrabold text-zinc-100 tracking-wide uppercase">
-          {t.transitions.loading.title}
-        </h2>
-        <p className="text-xs text-zinc-500 mt-1">
-          {locale === "pt-br" 
-            ? "Aguarde enquanto criamos seu plano personalizado..." 
-            : "Please wait while we generate your personalized plan..."}
-        </p>
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center relative min-h-[420px] py-6">
+      {/* Coluna Esquerda: Loading e Checklist */}
+      <div className="md:col-span-7 flex flex-col justify-between h-full w-full gap-5">
+        {/* Header Loading */}
+        <div className="text-left md:text-center px-1">
+          <h2 className="text-xl font-heading font-extrabold text-zinc-100 tracking-wide uppercase">
+            {t.transitions.loading.title}
+          </h2>
+          <p className="text-xs text-zinc-500 mt-1">
+            {locale === "pt-br" 
+              ? "Aguarde enquanto criamos seu plano personalizado..." 
+              : "Please wait while we generate your personalized plan..."}
+          </p>
+        </div>
 
-      {/* Progress Circle & Percent */}
-      <div className="flex-1 flex flex-col items-center justify-center my-6 relative">
-        <div className="relative w-28 h-28 flex items-center justify-center">
-          <svg className="w-full h-full -rotate-90 drop-shadow-[0_0_20px_rgba(190,242,100,0.2)]">
-            <circle
-              cx="56"
-              cy="56"
-              r="48"
-              className="stroke-zinc-900 fill-none"
-              strokeWidth="6"
-            />
-            <circle
-              cx="56"
-              cy="56"
-              r="48"
-              className="stroke-brand-lime fill-none transition-all duration-75"
-              strokeWidth="6"
-              strokeDasharray={2 * Math.PI * 48}
-              strokeDashoffset={2 * Math.PI * 48 * (1 - progress / 100)}
-            />
-          </svg>
-          <span className="absolute text-xl font-heading font-extrabold text-zinc-50 tracking-wider">
-            {progress}%
-          </span>
+        {/* Progress Circle & Percent */}
+        <div className="flex-1 flex flex-col items-center justify-center my-6 relative">
+          <div className="relative w-28 h-28 flex items-center justify-center">
+            <svg className="w-full h-full -rotate-90 drop-shadow-[0_0_20px_rgba(190,242,100,0.2)]">
+              <circle
+                cx="56"
+                cy="56"
+                r="48"
+                className="stroke-zinc-900 fill-none"
+                strokeWidth="6"
+              />
+              <circle
+                cx="56"
+                cy="56"
+                r="48"
+                className="stroke-brand-lime fill-none transition-all duration-75"
+                strokeWidth="6"
+                strokeDasharray={2 * Math.PI * 48}
+                strokeDashoffset={2 * Math.PI * 48 * (1 - progress / 100)}
+              />
+            </svg>
+            <span className="absolute text-xl font-heading font-extrabold text-zinc-50 tracking-wider">
+              {progress}%
+            </span>
+          </div>
+        </div>
+
+        {/* Checklist dos Cálculos */}
+        <div className="flex flex-col gap-2 px-2">
+          {steps.map((step, idx) => {
+            const isDone = progress >= step.maxProgress;
+            const isProcessing = progress >= step.minProgress && progress < step.maxProgress;
+
+            return (
+              <div
+                key={idx}
+                className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all ${
+                  isDone
+                    ? "bg-zinc-900/40 border-zinc-900 text-zinc-400"
+                    : isProcessing
+                    ? "bg-zinc-950 border-brand-teal/20 text-brand-teal"
+                    : "bg-zinc-950/20 border-zinc-950 text-zinc-700"
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all ${
+                    isDone
+                      ? "bg-brand-teal/10 border-brand-teal text-brand-teal"
+                      : isProcessing
+                      ? "border-brand-teal border-t-transparent animate-spin"
+                      : "border-zinc-800"
+                  }`}
+                >
+                  {isDone && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                </div>
+                <span className="text-[11px] font-semibold tracking-wide">
+                  {step.label}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Checklist dos Cálculos */}
-      <div className="flex flex-col gap-2 px-2">
-        {steps.map((step, idx) => {
-          const isDone = progress >= step.maxProgress;
-          const isProcessing = progress >= step.minProgress && progress < step.maxProgress;
-
-          return (
-            <div
-              key={idx}
-              className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all ${
-                isDone
-                  ? "bg-zinc-900/40 border-zinc-900 text-zinc-400"
-                  : isProcessing
-                  ? "bg-zinc-950 border-brand-teal/20 text-brand-teal"
-                  : "bg-zinc-950/20 border-zinc-950 text-zinc-700"
-              }`}
-            >
-              <div
-                className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all ${
-                  isDone
-                    ? "bg-brand-teal/10 border-brand-teal text-brand-teal"
-                    : isProcessing
-                    ? "border-brand-teal border-t-transparent animate-spin"
-                    : "border-zinc-800"
-                }`}
-              >
-                {isDone && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-              </div>
-              <span className="text-[11px] font-semibold tracking-wide">
-                {step.label}
-              </span>
-            </div>
-          );
-        })}
+      {/* Coluna Direita: Ilustração Visual (Layout A) */}
+      <div className="md:col-span-5 hidden md:flex flex-col justify-end p-6 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
+        <Image
+          src={VISUAL_ASSETS.results.walkingPlanProcessing}
+          alt={locale === "pt-br" ? "Processando seu plano de caminhada personalizado" : "Processing your personalised treadmill walking plan"}
+          fill
+          sizes="33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+        <div className="relative z-10 flex flex-col gap-1">
+          <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest">
+            {locale === "pt-br" ? "ESTRUTURAÇÃO DO PLANO" : "PLAN TIMELINE"}
+          </span>
+          <span className="text-[9px] text-zinc-300 font-medium leading-normal">
+            {locale === "pt-br" ? "Calibrando velocidades, inclinações e tempos para maximizar a oxidação de gordura." : "Calibrating speed, incline, and durations to maximize fat oxidation safely."}
+          </span>
+        </div>
       </div>
 
       {/* Modais Suspensos por Cima */}

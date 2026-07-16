@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/core/i18n/translations";
 import { ArrowRight, Flame, Shield, Star, Trophy, Zap } from "lucide-react";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
+import { CRO_FLAGS } from "@/config/flags";
+import { trackEvent } from "@/core/utils/analytics";
+import { useEffect } from "react";
 
 export default function HomePage() {
   const router = useRouter();
@@ -14,7 +17,12 @@ export default function HomePage() {
   const locale = (params.locale as string) || "en-gb";
   const t = useTranslations(locale);
 
+  useEffect(() => {
+    trackEvent("landing_view", { locale });
+  }, [locale]);
+
   const handleStartQuiz = () => {
+    trackEvent("quiz_started", { locale });
     router.push(`/${locale}/quiz`);
   };
 
@@ -97,7 +105,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* CTA Button */}
             <div className="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <Button
                 onClick={handleStartQuiz}
@@ -106,6 +113,11 @@ export default function HomePage() {
                 {t.landing.cta}
                 <ArrowRight className="w-4 h-4" />
               </Button>
+              {CRO_FLAGS.landingDurationHint && (
+                <span className="text-[10px] text-zinc-500 font-semibold tracking-wide text-center sm:text-left">
+                  {locale === "pt-br" ? "⏱ Leva ~2 minutos" : "⏱ Takes ~2 minutes"}
+                </span>
+              )}
             </div>
 
             {/* Validação Social Rápida */}

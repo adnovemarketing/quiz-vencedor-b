@@ -714,7 +714,7 @@ export const translations: Record<Locale, TranslationSchema> = {
       activeUsers: 'MAIS DE 45.000 ALUNOS ATIVOS',
       workoutOfTheDay: 'TREINO DO DIA',
       treadmillHiit: 'ESTEIRA HIIT',
-      workoutTitle: 'Incline Interval A',
+      workoutTitle: 'Intervalado Inclinado A',
       duration: 'Duração recomendada: 25 minutos',
       stepWarmup: '00:00 - 03:00 (Aquecimento)',
       stepFirme: '03:00 - 08:00 (Ritmo Firme)',
@@ -835,7 +835,7 @@ export const translations: Record<Locale, TranslationSchema> = {
           }
         },
         dailyNutrition: {
-          badge: 'ETAPA 11: NUTRILAND',
+          badge: 'ETAPA 11: NUTRIÇÃO',
           title: 'Como é o seu padrão alimentar básico de combustível pré-treino?',
           subtitle: 'Ajudaremos a posicionar seus treinos no horário de melhor oxidação de gorduras.',
           carbsHeavy: { label: 'Alto teor de Carboidratos', desc: 'Energia rápida. Bom para treinos intervalados intensos.' },

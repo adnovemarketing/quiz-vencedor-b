@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useQuizStore } from "@/core/store/quizStore";
 import { QuizStep, MainBlocker } from "@/core/types/quiz";
 import { OptionCard } from "../OptionCard";
 import { useTranslations } from "@/core/i18n/translations";
 import { useLocale } from "@/core/i18n/useLocale";
 import { ShieldAlert } from "lucide-react";
+import { VISUAL_ASSETS } from "@/config/visualAssets";
 
 interface StepProps {
   onNext: (nextStep: QuizStep) => void;
@@ -87,25 +89,23 @@ export function StepMindsetBlockers({ onNext }: StepProps) {
       </div>
 
       {/* Coluna Direita: Ilustração Visual (Layout A) */}
-      <div className="md:col-span-5 hidden md:flex flex-col items-center justify-center p-4 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
-        <div className="absolute inset-0 bg-gradient-to-tr from-brand-lime/5 via-transparent to-brand-teal/5 opacity-80" />
-        <svg className="w-36 h-36 relative z-10 drop-shadow-[0_0_20px_rgba(190,242,100,0.1)]" viewBox="0 0 100 100" fill="none">
-          {/* Símbolo de Escudo / Quebra */}
-          <path d="M 50 15 C 30 15, 25 25, 25 45 C 25 70, 50 90, 50 90 C 50 90, 75 70, 75 45 C 75 25, 70 15, 50 15 Z" stroke="#14b8a6" strokeWidth="2.5" fill="#09090b" />
-          
-          {/* Cadeado Aberto (Metáfora de Superar Bloqueios) */}
-          <rect x="42" y="50" width="16" height="12" rx="2" fill="#bef264" />
-          <path d="M 45 50 V 42 C 45 37, 55 37, 55 42" stroke="#bef264" strokeWidth="2" strokeLinecap="round" />
-          
-          {/* Raio de Energia de Rompimento */}
-          <path d="M 50 25 L 47 38 H 53 L 50 48" stroke="#14b8a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest mt-4 relative z-10">
-          {locale === "pt-br" ? "MINDFULNESS ATIVO" : "MINDSET BLUEPRINT"}
-        </span>
-        <span className="text-[9px] text-zinc-500 font-medium text-center max-w-[120px] mt-1 relative z-10 leading-normal">
-          {locale === "pt-br" ? "Estratégias sob medida contra o tédio e a dor" : "Tailored routines built to beat daily boredom"}
-        </span>
+      <div className="md:col-span-5 hidden md:flex flex-col justify-end p-6 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
+        <Image
+          src={VISUAL_ASSETS.lifestyle.exerciseMotivation}
+          alt={locale === "pt-br" ? "Estratégias sob medida contra o tédio e a dor" : "Tailored routines built to beat daily boredom"}
+          fill
+          sizes="33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+        <div className="relative z-10 flex flex-col gap-1">
+          <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest">
+            {locale === "pt-br" ? "MINDFULNESS ATIVO" : "MINDSET BLUEPRINT"}
+          </span>
+          <span className="text-[9px] text-zinc-300 font-medium leading-normal">
+            {locale === "pt-br" ? "Estratégias sob medida contra o tédio e a dor" : "Tailored routines built to beat daily boredom"}
+          </span>
+        </div>
       </div>
     </div>
   );

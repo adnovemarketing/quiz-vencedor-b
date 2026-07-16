@@ -135,3 +135,17 @@
     @apply font-sans;
   }
 }
+
+/* Custom Grid Utility Fallbacks for Desktop Layout */
+@media (min-width: 768px) {
+  .md-grid-cols-12 {
+    display: grid !important;
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  }
+  .md-col-span-7 {
+    grid-column: span 7 / span 7 !important;
+  }
+  .md-col-span-5 {
+    grid-column: span 5 / span 5 !important;
+  }
+}

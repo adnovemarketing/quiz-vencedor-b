@@ -27,13 +27,13 @@ export function OptionCard({
   multiSelect = false,
 }: OptionCardProps) {
   return (
-    <motion.button
+     <motion.button
       type="button"
       onClick={onClick}
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "w-full text-left rounded-2xl border bg-zinc-900/60 backdrop-blur-sm select-none transition-all cursor-pointer flex",
+        "w-full text-left rounded-2xl border bg-zinc-900/60 backdrop-blur-sm select-none transition-all cursor-pointer flex min-w-0",
         image ? "flex-col items-stretch p-0 overflow-hidden" : "items-center justify-between p-5 gap-4",
         selected
           ? "border-brand-lime bg-zinc-900 shadow-lg shadow-lime-500/10"
@@ -41,13 +41,13 @@ export function OptionCard({
       )}
     >
       {image && (
-        <div className="w-full aspect-[16/10] relative bg-zinc-950/60 overflow-hidden border-b border-zinc-800/60 flex items-center justify-center">
+        <div className="w-full aspect-[16/10] relative bg-zinc-950/60 overflow-hidden border-b border-zinc-800/60 flex items-center justify-center shrink-0">
           {image}
         </div>
       )}
 
-      <div className={cn("flex items-center justify-between gap-4 flex-1", image ? "p-4 md:p-5" : "")}>
-        <div className="flex items-center gap-3.5 flex-1">
+      <div className={cn("flex items-center justify-between gap-4 flex-1 min-w-0", image ? "p-4 md:p-5" : "")}>
+        <div className="flex items-center gap-3.5 flex-1 min-w-0">
           {/* Ícone ou Emoji */}
           {icon && (
             <div
@@ -69,17 +69,17 @@ export function OptionCard({
           )}
 
           {/* Texto do Card */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h3
               className={cn(
-                "text-sm font-semibold transition-colors leading-snug",
+                "text-sm font-semibold transition-colors leading-snug truncate-none whitespace-normal break-words",
                 selected ? "text-brand-lime" : "text-zinc-100"
               )}
             >
               {title}
             </h3>
             {description && (
-              <p className="text-xs text-zinc-400 mt-1 font-medium leading-relaxed">
+              <p className="text-xs text-zinc-400 mt-1 font-medium leading-relaxed break-words">
                 {description}
               </p>
             )}

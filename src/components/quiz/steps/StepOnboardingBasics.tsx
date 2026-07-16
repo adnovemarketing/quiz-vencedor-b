@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useQuizStore } from "@/core/store/quizStore";
 import { PrimaryGoal, QuizStep } from "@/core/types/quiz";
 import { OptionCard } from "../OptionCard";
 import { useTranslations } from "@/core/i18n/translations";
 import { useLocale } from "@/core/i18n/useLocale";
 import { Flame, Heart, Calendar, Brain, Activity } from "lucide-react";
+import { VISUAL_ASSETS } from "@/config/visualAssets";
 
 interface StepProps {
   onNext: (nextStep: QuizStep) => void;
@@ -86,50 +88,24 @@ export function StepOnboardingBasics({ onNext }: StepProps) {
       </div>
 
       {/* Coluna Direita: Ilustração Visual (Oculta em mobile pequeno, visível em md+) */}
-      <div className="md:col-span-5 hidden md:flex flex-col items-center justify-center p-4 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
-        <div className="absolute inset-0 bg-gradient-to-tr from-brand-lime/5 via-transparent to-brand-teal/5 opacity-80" />
-        <svg className="w-40 h-40 relative z-10 drop-shadow-[0_0_25px_rgba(190,242,100,0.15)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="limeTealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#bef264" />
-              <stop offset="100%" stopColor="#14b8a6" />
-            </linearGradient>
-            <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#bef264" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#bef264" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          
-          {/* Círculo de Brilho de Fundo */}
-          <circle cx="100" cy="100" r="80" fill="url(#glowGrad)" />
-
-          {/* Anéis de Meta Metálicos */}
-          <circle cx="100" cy="100" r="70" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-          <circle cx="100" cy="100" r="55" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="5 5" />
-          
-          {/* Arco Progresso Principal */}
-          <path d="M 100 30 A 70 70 0 1 1 50 150" stroke="url(#limeTealGrad)" strokeWidth="4" strokeLinecap="round" strokeDasharray="300" strokeDashoffset="50" className="animate-[spin_40s_linear_infinite] origin-center" style={{ transformOrigin: '100px 100px' }} />
-          
-          {/* Círculo Central com Símbolo de Alvo */}
-          <circle cx="100" cy="100" r="40" fill="#09090b" stroke="#18181b" strokeWidth="2" />
-          
-          {/* Alvo - Círculos e Linhas de Precisão */}
-          <circle cx="100" cy="100" r="28" stroke="#14b8a6" strokeWidth="1.5" strokeOpacity="0.3" />
-          <circle cx="100" cy="100" r="16" stroke="#bef264" strokeWidth="2" strokeOpacity="0.8" />
-          <circle cx="100" cy="100" r="6" fill="#bef264" />
-          
-          {/* Retículos de Mira */}
-          <line x1="100" y1="50" x2="100" y2="60" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="100" y1="140" x2="100" y2="150" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="50" y1="100" x2="60" y2="100" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="140" y1="100" x2="150" y2="100" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest mt-4 relative z-10">
-          {locale === "pt-br" ? "MÉTODO CALIBRADO" : "CALIBRATED METHOD"}
-        </span>
-        <span className="text-[9px] text-zinc-500 font-medium text-center max-w-[120px] mt-1 relative z-10 leading-normal">
-          {locale === "pt-br" ? "Metas calculadas biologicamente" : "Goals biologically calculated"}
-        </span>
+      <div className="md:col-span-5 hidden md:flex flex-col justify-end p-6 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
+        <Image
+          src={VISUAL_ASSETS.lifestyle.weightGoalProgress}
+          alt={locale === "pt-br" ? "Metas calculadas biologicamente" : "Goals biologically calculated"}
+          fill
+          sizes="33vw"
+          priority
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+        <div className="relative z-10 flex flex-col gap-1">
+          <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest">
+            {locale === "pt-br" ? "MÉTODO CALIBRADO" : "CALIBRATED METHOD"}
+          </span>
+          <span className="text-[9px] text-zinc-300 font-medium leading-normal">
+            {locale === "pt-br" ? "Metas calculadas biologicamente" : "Goals biologically calculated"}
+          </span>
+        </div>
       </div>
     </div>
   );
