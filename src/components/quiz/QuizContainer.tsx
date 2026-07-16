@@ -1,11 +1,57 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { useQuizNavigation } from "@/core/hooks/useQuizNavigation";
 import { ProgressBar } from "./ProgressBar";
 import { QuizLayout } from "./QuizLayout";
 import { useLocale } from "@/core/i18n/useLocale";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/core/utils/analytics";
+import { useQuizStore } from "@/core/store/quizStore";
+import { QuizStep } from "@/core/types/quiz";
+
+function getAnsweredValueForStep(step: QuizStep, data: any) {
+  switch (step) {
+    case 'onboarding-basics':
+      return data.primaryGoal;
+    case 'age-selection':
+      return data.ageGroup;
+    case 'gender-selection':
+      return data.biomechanicsGender;
+    case 'treadmill-frequency':
+      return data.weeklyAccess;
+    case 'cardio-level':
+      return data.cardioFitnessLevel;
+    case 'incline-profile':
+      return data.hasInclineAccess;
+    case 'injury-triage':
+      return data.jointSensitivities;
+    case 'sleep-quality':
+      return data.sleepDuration;
+    case 'water-intake':
+      return data.waterIntake;
+    case 'daily-activity':
+      return data.jobActivity;
+    case 'daily-nutrition':
+      return data.nutritionBaseline;
+    case 'antropometria':
+      return { weight: data.weight, height: data.height, targetWeight: data.targetWeight };
+    case 'important-event':
+      return data.importantEvent;
+    case 'mindset-blockers':
+      return data.mainBlocker;
+    case 'educational-transition':
+      return "understood";
+    case 'loading-calculation':
+      return { preferredWorkoutTime: data.preferredWorkoutTime, readyToChange: data.readyToChange };
+    case 'report-projection':
+      return "continued";
+    case 'email-capture':
+      return data.email;
+    default:
+      return null;
+  }
+}
 
 // Importações dos Componentes Físicos de Etapa
 import { StepOnboardingBasics } from "./steps/StepOnboardingBasics";
@@ -32,12 +78,58 @@ export function QuizContainer() {
     currentStep,
     activeDotIndex,
     showProgressBar,
+    stepNumber,
+    totalSteps,
     navigateTo,
     navigateBack,
     navigateForward,
   } = useQuizNavigation();
 
   const locale = useLocale();
+
+  const prevStepRef = useRef<QuizStep | null>(null);
+  const completedRef = useRef(false);
+
+  useEffect(() => {
+    // 1. Log quiz_step_viewed
+    trackEvent("quiz_step_viewed", {
+      step: currentStep,
+      stepNumber,
+      totalSteps,
+      locale,
+    });
+
+    // 2. Log question_answered if we moved from a previous step
+    if (prevStepRef.current && prevStepRef.current !== currentStep) {
+      const state = useQuizStore.getState().data;
+      const answeredValue = getAnsweredValueForStep(prevStepRef.current, state);
+      trackEvent("question_answered", {
+        step: prevStepRef.current,
+        answer: answeredValue,
+        locale,
+      });
+    }
+
+    prevStepRef.current = currentStep;
+
+    // Se o usuário chegar no email-capture ou report-projection, ele concluiu o quiz
+    if (currentStep === "email-capture" || currentStep === "report-projection") {
+      completedRef.current = true;
+    }
+  }, [currentStep, stepNumber, totalSteps, locale]);
+
+  useEffect(() => {
+    return () => {
+      // Se desmontou e completedRef.current for falso, foi um abandono
+      if (!completedRef.current) {
+        trackEvent("quiz_abandoned", {
+          lastStep: useQuizStore.getState().currentStep,
+          activeDotIndex: useQuizStore.getState().history.length,
+          locale,
+        });
+      }
+    };
+  }, [locale]);
 
   // Dynamic card widths to support side-by-side structures on desktop
   const getCardWidthClass = () => {
@@ -123,6 +215,8 @@ export function QuizContainer() {
       {/* Barra de Progresso superior */}
       <ProgressBar
         activeDotIndex={activeDotIndex}
+        stepNumber={stepNumber}
+        totalSteps={totalSteps}
         onBack={navigateBack}
         onForward={navigateForward}
         showProgress={showProgressBar}

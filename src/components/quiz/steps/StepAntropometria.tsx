@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useQuizStore } from "@/core/store/quizStore";
 import { QuizStep } from "@/core/types/quiz";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/core/i18n/translations";
 import { useLocale } from "@/core/i18n/useLocale";
 import { cn } from "@/lib/utils";
+import { VISUAL_ASSETS } from "@/config/visualAssets";
 
 interface StepProps {
   onNext: (nextStep: QuizStep) => void;
@@ -239,31 +241,23 @@ export function StepAntropometria({ onNext }: StepProps) {
       </div>
 
       {/* Coluna Direita: Ilustração Balança Premium (Layout D) */}
-      <div className="md:col-span-5 hidden md:flex flex-col items-center justify-center p-4 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
-        <div className="absolute inset-0 bg-gradient-to-tr from-brand-lime/5 via-transparent to-brand-teal/5 opacity-80" />
-        <svg className="w-36 h-36 relative z-10 drop-shadow-[0_0_20px_rgba(20,184,166,0.1)]" viewBox="0 0 100 100" fill="none">
-          {/* Balança de Bioimpedância */}
-          <rect x="25" y="25" width="50" height="50" rx="10" fill="#09090b" stroke="#18181b" strokeWidth="3.5" />
-          <rect x="25" y="25" width="50" height="50" rx="10" stroke="rgba(255,255,255,0.03)" strokeWidth="1.5" />
-          
-          {/* Sensores Metálicos */}
-          <rect x="30" y="32" width="10" height="36" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          <rect x="60" y="32" width="10" height="36" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          
-          {/* Visor Digital */}
-          <rect x="42" y="28" width="16" height="8" rx="2" fill="#000" stroke="#18181b" strokeWidth="1" />
-          <line x1="45" y1="32" x2="55" y2="32" stroke="#bef264" strokeWidth="2" strokeLinecap="round" className="animate-pulse" />
-          
-          {/* Grid de Medidas (Luzes Circundantes) */}
-          <circle cx="50" cy="50" r="16" stroke="rgba(20,184,166,0.2)" strokeWidth="1" strokeDasharray="3 3" />
-          <circle cx="50" cy="50" r="10" stroke="#14b8a6" strokeWidth="1.5" />
-        </svg>
-        <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest mt-4 relative z-10">
-          {locale === "pt-br" ? "MÉTRICAS EXATAS" : "BODY COMPOSITION"}
-        </span>
-        <span className="text-[9px] text-zinc-500 font-medium text-center max-w-[120px] mt-1 relative z-10 leading-normal">
-          {locale === "pt-br" ? "IMC calculado cientificamente" : "Scientific IMC calculations"}
-        </span>
+      <div className="md:col-span-5 hidden md:flex flex-col justify-end p-6 bg-zinc-950/40 rounded-2xl border border-zinc-900/60 aspect-square relative overflow-hidden group select-none">
+        <Image
+          src={VISUAL_ASSETS.lifestyle.currentWeightScale}
+          alt={locale === "pt-br" ? "IMC calculado cientificamente" : "Scientific IMC calculations"}
+          fill
+          sizes="33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+        <div className="relative z-10 flex flex-col gap-1">
+          <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest">
+            {locale === "pt-br" ? "MÉTRICAS EXATAS" : "BODY COMPOSITION"}
+          </span>
+          <span className="text-[9px] text-zinc-300 font-medium leading-normal">
+            {locale === "pt-br" ? "IMC calculado cientificamente" : "Scientific IMC calculations"}
+          </span>
+        </div>
       </div>
     </div>
   );

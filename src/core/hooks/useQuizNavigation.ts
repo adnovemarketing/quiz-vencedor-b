@@ -91,6 +91,31 @@ export function useQuizNavigation() {
     }
   };
 
+  // Mapeamento de Etapas para número sequencial visível (1-16)
+  const TOTAL_VISIBLE_STEPS = 16;
+  const getStepNumber = (step: QuizStep): number => {
+    const order: QuizStep[] = [
+      "onboarding-basics",
+      "age-selection",
+      "gender-selection",
+      "treadmill-frequency",
+      "cardio-level",
+      "incline-profile",
+      "injury-triage",
+      "sleep-quality",
+      "water-intake",
+      "daily-activity",
+      "daily-nutrition",
+      "antropometria",
+      "important-event",
+      "mindset-blockers",
+      "educational-transition",
+      "email-capture",
+    ];
+    const idx = order.indexOf(step);
+    return idx >= 0 ? idx + 1 : TOTAL_VISIBLE_STEPS;
+  };
+
   // Ocultar barra de progresso em telas de transição e relatórios específicos
   const shouldShowProgressBar = (step: QuizStep): boolean => {
     return ![
@@ -105,6 +130,8 @@ export function useQuizNavigation() {
     futureSteps,
     activeDotIndex: getStepDotIndex(currentStep),
     showProgressBar: shouldShowProgressBar(currentStep),
+    stepNumber: getStepNumber(currentStep),
+    totalSteps: TOTAL_VISIBLE_STEPS,
     navigateTo,
     navigateBack: history.length > 0 ? navigateBack : undefined,
     navigateForward: futureSteps.length > 0 ? navigateForward : undefined,

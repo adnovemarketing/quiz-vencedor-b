@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { Header } from "@/components/common/Header";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/core/i18n/translations";
@@ -17,6 +18,10 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { VISUAL_ASSETS } from "@/config/visualAssets";
+import { useQuizStore } from "@/core/store/quizStore";
+import { CRO_FLAGS } from "@/config/flags";
+import { trackEvent } from "@/core/utils/analytics";
 
 // Componente de FAQ Accordion Unitário
 function FAQItem({ question, answer }: { question: string; answer: string }) {
@@ -49,18 +54,18 @@ export default function CheckoutPage() {
   const locale = (params.locale as string) || "en-gb";
   const t = useTranslations(locale);
   const config = getMarketConfig(locale);
+  const { data: quizData } = useQuizStore();
 
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "quarterly">("quarterly");
-  const [timeLeft, setTimeLeft] = useState<number>(() => {
-    if (typeof window !== "undefined") {
-      const savedTime = sessionStorage.getItem("treadmill-method-timer");
-      if (savedTime) {
-        const parsedTime = parseInt(savedTime, 10);
-        if (parsedTime > 0) return parsedTime;
-      }
+  const [timeLeft, setTimeLeft] = useState<number>(900);
+
+  useEffect(() => {
+    const savedTime = sessionStorage.getItem("treadmill-method-timer");
+    if (savedTime) {
+      const parsedTime = parseInt(savedTime, 10);
+      if (parsedTime > 0) setTimeLeft(parsedTime);
     }
-    return 900;
-  });
+  }, []);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -76,6 +81,19 @@ export default function CheckoutPage() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
+  useEffect(() => {
+    trackEvent("offer_viewed", { locale });
+  }, [locale]);
+
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    trackEvent("plan_selected", { plan: selectedPlan, locale });
+  }, [selectedPlan, locale]);
+
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -87,6 +105,8 @@ export default function CheckoutPage() {
       ? formatCurrency(config.prices.quarterly, locale)
       : formatCurrency(config.prices.monthly, locale);
     const planName = selectedPlan === "quarterly" ? t.offer.quarterlyLabel : t.offer.monthlyLabel;
+
+    trackEvent("checkout_clicked", { plan: selectedPlan, price: selectedPrice, locale });
 
     alert(
       locale === "pt-br" 
@@ -105,6 +125,22 @@ export default function CheckoutPage() {
   const qPerDay = formatCurrency(parseFloat(qPerDayVal), locale);
   const mPerDay = formatCurrency(parseFloat(mPerDayVal), locale);
 
+  // Personalised plan name for the checkout headline
+  const getPersonalisedLabel = () => {
+    const hasIncline = quizData.hasInclineAccess;
+    const level = quizData.cardioFitnessLevel;
+    const js = quizData.jointSensitivities;
+    const hasJointIssues = js.knees || js.ankles || js.lowerBack;
+    if (hasJointIssues) {
+      return locale === "pt-br" ? "Protocolo de Recuperação Articular" : "Active Recovery Protocol";
+    }
+    if (hasIncline && (level === "intermediate" || level === "advanced")) {
+      return locale === "pt-br" ? "Método de Inclinação HIIT" : "Incline HIIT Method";
+    }
+    return locale === "pt-br" ? "Método de Desenvolvimento de Ritmo" : "Pace Builder Method";
+  };
+  const personalisedPlan = getPersonalisedLabel();
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50 flex flex-col pb-12">
       {/* Cabeçalho */}
@@ -114,11 +150,18 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-start">
           {/* Coluna Esquerda: Informações e Planos (col-span-7) */}
           <div className="md:col-span-7 flex flex-col gap-6">
-            {/* Banner Parabéns */}
-            <div className="border border-yellow-400/20 bg-yellow-400/5 p-4 rounded-2xl text-center">
-              <span className="text-xs font-bold text-yellow-300">
+            {/* Banner de Boas-vindas Personalizado */}
+            <div className="border border-brand-lime/20 bg-brand-lime/5 p-4 rounded-2xl text-center">
+              <span className="text-[10px] font-bold text-brand-lime tracking-widest uppercase block">
                 {t.offer.congratsBadge}
               </span>
+              {CRO_FLAGS.checkoutPersonalisedHeadline && personalisedPlan ? (
+                <p className="text-xs text-zinc-300 font-semibold mt-1">
+                  {locale === "pt-br"
+                    ? `Seu plano personalizado — ${personalisedPlan} — está pronto.`
+                    : `Your personalised plan — ${personalisedPlan} — is ready below.`}
+                </p>
+              ) : null}
             </div>
 
             {/* Cronômetro */}
@@ -219,6 +262,106 @@ export default function CheckoutPage() {
               </button>
             </div>
 
+             {/* Benefícios Principais (Fase 3) */}
+            <div className="bg-zinc-900/20 border border-zinc-900 p-5 rounded-3xl flex flex-col gap-4">
+              <h3 className="text-xs font-heading font-extrabold text-zinc-200 uppercase tracking-wide">
+                {locale === "pt-br" ? "BENEFÍCIOS EXCLUSIVOS DO MÉTODO" : "EXCLUSIVE TRAINING BENEFITS"}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Benefício 1: Personalização */}
+                <div className="bg-zinc-950 border border-zinc-900/80 rounded-2xl overflow-hidden flex flex-col group">
+                  <div className="w-full h-32 relative overflow-hidden">
+                    <Image
+                      src={VISUAL_ASSETS.offer.benefitPersonalised}
+                      alt={locale === "pt-br" ? "Plano de caminhada 100% personalizado" : "100% personalised treadmill walking plan"}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 250px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h4 className="text-xs font-bold text-zinc-200">
+                      {locale === "pt-br" ? "Plano Sob Medida" : "Customised Plan"}
+                    </h4>
+                    <p className="text-[10px] text-zinc-400 mt-1 leading-relaxed">
+                      {locale === "pt-br"
+                        ? "Velocidades e inclinações ajustadas ao seu peso, idade e capacidade cardíaca."
+                        : "Interval speed and incline configured to your specific heart rate and body metrics."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Benefício 2: Acompanhamento de Progresso */}
+                <div className="bg-zinc-950 border border-zinc-900/80 rounded-2xl overflow-hidden flex flex-col group">
+                  <div className="w-full h-32 relative overflow-hidden">
+                    <Image
+                      src={VISUAL_ASSETS.offer.benefitProgress}
+                      alt={locale === "pt-br" ? "Acompanhamento e evolução de queima calórica" : "Weekly progress and metabolic tracking"}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 250px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h4 className="text-xs font-bold text-zinc-200">
+                      {locale === "pt-br" ? "Métricas e Progresso" : "Progress & Metrics"}
+                    </h4>
+                    <p className="text-[10px] text-zinc-400 mt-1 leading-relaxed">
+                      {locale === "pt-br"
+                        ? "Acompanhe de forma clara a queima calórica e evolução metabólica a cada semana."
+                        : "Weekly projections and caloric oxidation updates keep you motivated and on target."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Benefício 3: Treino em Casa */}
+                <div className="bg-zinc-950 border border-zinc-900/80 rounded-2xl overflow-hidden flex flex-col group">
+                  <div className="w-full h-32 relative overflow-hidden">
+                    <Image
+                      src={VISUAL_ASSETS.offer.benefitHome}
+                      alt={locale === "pt-br" ? "Treinos para fazer em casa ou na academia" : "Train at home or your local gym"}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 250px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h4 className="text-xs font-bold text-zinc-200">
+                      {locale === "pt-br" ? "Qualquer Esteira" : "Any Treadmill"}
+                    </h4>
+                    <p className="text-[10px] text-zinc-400 mt-1 leading-relaxed">
+                      {locale === "pt-br"
+                        ? "Adequado tanto para esteiras residenciais simples quanto para os aparelhos da academia."
+                        : "Compatible with basic home equipment or gym setups, with or without incline."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Benefício 4: Rotina Flexível */}
+                <div className="bg-zinc-950 border border-zinc-900/80 rounded-2xl overflow-hidden flex flex-col group">
+                  <div className="w-full h-32 relative overflow-hidden">
+                    <Image
+                      src={VISUAL_ASSETS.offer.benefitFlexible}
+                      alt={locale === "pt-br" ? "Rotina flexível para qualquer horário" : "Flexible scheduling for busy lifestyles"}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 250px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h4 className="text-xs font-bold text-zinc-200">
+                      {locale === "pt-br" ? "Tempo Otimizado" : "Flexible Schedule"}
+                    </h4>
+                    <p className="text-[10px] text-zinc-400 mt-1 leading-relaxed">
+                      {locale === "pt-br"
+                        ? "Sessões dinâmicas que duram entre 20 e 35 minutos, fáceis de encaixar no seu dia."
+                        : "Highly efficient 20-to-35 minute walking protocols that fit into any calendar."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Entregáveis da Oferta */}
             <div className="bg-zinc-900/20 border border-zinc-900 p-5 rounded-3xl flex flex-col gap-4">
               <h3 className="text-xs font-heading font-extrabold text-zinc-200 uppercase tracking-wide">
@@ -231,8 +374,14 @@ export default function CheckoutPage() {
                     <li key={idx} className="flex items-start gap-2.5">
                       <CheckCircle className="w-4 h-4 text-brand-lime shrink-0 mt-0.5" />
                       <span>
-                        <strong className="text-zinc-200 font-bold">{parts[0]}:</strong>
-                        {parts.slice(1).join(":")}
+                        {parts.length > 1 ? (
+                          <>
+                            <strong className="text-zinc-200 font-bold">{parts[0]}:</strong>
+                            {parts.slice(1).join(":")}
+                          </>
+                        ) : (
+                          <span className="text-zinc-300">{item}</span>
+                        )}
                       </span>
                     </li>
                   );
@@ -240,33 +389,35 @@ export default function CheckoutPage() {
               </ul>
             </div>
 
-            {/* Prova Social (Depoimentos) */}
-            <div className="bg-zinc-900/20 border border-zinc-900 p-5 rounded-3xl flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-brand-lime" />
-                <h3 className="text-xs font-heading font-extrabold text-zinc-200 uppercase tracking-wide">
-                  {t.offer.testimonialsTitle}
-                </h3>
-              </div>
+            {/* Prova Social (Depoimentos - Apenas em Desenvolvimento) */}
+            {process.env.NODE_ENV === "development" && (
+              <div className="bg-zinc-900/20 border border-zinc-900 p-5 rounded-3xl flex flex-col gap-4 opacity-75 border-dashed">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-brand-lime" />
+                  <h3 className="text-xs font-heading font-extrabold text-zinc-200 uppercase tracking-wide">
+                    {t.offer.testimonialsTitle} <span className="text-[9px] text-zinc-500 font-normal lowercase">(development preview)</span>
+                  </h3>
+                </div>
 
-              <div className="flex flex-col gap-4">
-                {t.offer.testimonials.map((testi, idx) => (
-                  <div key={idx} className="bg-zinc-950 border border-zinc-900 p-4 rounded-2xl flex flex-col gap-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-zinc-200">{testi.name}</span>
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                        ))}
+                <div className="flex flex-col gap-4">
+                  {t.offer.testimonials.map((testi, idx) => (
+                    <div key={idx} className="bg-zinc-950 border border-zinc-900 p-4 rounded-2xl flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-zinc-200">{testi.name}</span>
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                          ))}
+                        </div>
                       </div>
+                      <p className="text-[10px] text-zinc-400 italic leading-relaxed">
+                        &ldquo;{testi.text}&rdquo;
+                      </p>
                     </div>
-                    <p className="text-[10px] text-zinc-400 italic leading-relaxed">
-                      &ldquo;{testi.text}&rdquo;
-                    </p>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* FAQ Acordeão */}
             <div className="bg-zinc-900/20 border border-zinc-900 p-5 rounded-3xl flex flex-col gap-3">
@@ -285,40 +436,16 @@ export default function CheckoutPage() {
             <div className="bg-zinc-900/40 border border-zinc-900 p-5 rounded-3xl flex flex-col items-center justify-center relative overflow-hidden select-none">
               <div className="absolute inset-0 bg-gradient-to-tr from-brand-lime/5 via-transparent to-brand-teal/5 opacity-80" />
               
-              <svg className="w-48 h-36 relative z-10 drop-shadow-[0_15px_30px_rgba(0,0,0,0.5)]" viewBox="0 0 120 90" fill="none">
-                {/* Mockup do Ebook de Fundo */}
-                <rect x="25" y="10" width="45" height="60" rx="3" fill="#09090b" stroke="#1f1f23" strokeWidth="2.5" />
-                <rect x="25" y="10" width="45" height="60" rx="3" fill="url(#ebookCover)" stroke="rgba(255,255,255,0.05)" />
-                
-                {/* Smartphone de Frente */}
-                <rect x="62" y="25" width="32" height="55" rx="5" fill="#000" stroke="#1f1f23" strokeWidth="2" />
-                <rect x="64" y="27" width="28" height="51" rx="4" fill="#18181b" />
-                {/* Detalhe câmera */}
-                <circle cx="78" cy="30" r="0.8" fill="#bef264" />
-                
-                {/* Speedometer ou Gráfico simulado na tela do celular */}
-                <circle cx="78" cy="52" r="10" stroke="rgba(20,184,166,0.15)" strokeWidth="2" />
-                <circle cx="78" cy="52" r="10" stroke="#14b8a6" strokeWidth="2.5" strokeDasharray="62" strokeDashoffset="25" />
-                <path d="M 78 52 L 84 48" stroke="#bef264" strokeWidth="1.5" strokeLinecap="round" />
-
-                {/* Linhas de texto e logo do Ebook */}
-                <text x="47" y="22" fill="#fff" fontSize="3" fontWeight="bold" textAnchor="middle">THE</text>
-                <text x="47" y="27" fill="#bef264" fontSize="4.5" fontWeight="black" textAnchor="middle">TREADMILL</text>
-                <text x="47" y="32" fill="#fff" fontSize="3" fontWeight="bold" textAnchor="middle">METHOD</text>
-                <rect x="33" y="42" width="28" height="1.5" rx="0.5" fill="rgba(255,255,255,0.1)" />
-                <rect x="33" y="45" width="22" height="1" rx="0.5" fill="rgba(255,255,255,0.05)" />
-                
-                {/* Selo de Garantia de 30 Dias */}
-                <circle cx="35" cy="62" r="10" fill="#14b8a6" stroke="#09090b" strokeWidth="1.5" />
-                <text x="35" y="64" fill="#09090b" fontSize="4.5" fontWeight="black" textAnchor="middle">30D</text>
-
-                <defs>
-                  <linearGradient id="ebookCover" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#18181b" />
-                    <stop offset="100%" stopColor="#09090b" />
-                  </linearGradient>
-                </defs>
-              </svg>
+              <div className="w-48 h-36 relative z-10 drop-shadow-[0_15px_30px_rgba(0,0,0,0.5)]">
+                <Image
+                  src={VISUAL_ASSETS.mockups.offerProduct}
+                  alt={locale === "pt-br" ? "Mapeamento Completo do Método de Esteira" : "Complete Treadmill Method Roadmap"}
+                  fill
+                  sizes="192px"
+                  priority
+                  className="object-contain"
+                />
+              </div>
 
               <span className="text-[10px] font-heading font-black text-brand-lime uppercase tracking-widest mt-4 relative z-10">
                 {locale === "pt-br" ? "MÉTODO DE ESTEIRA COMPLETO" : "COMPLETE TREADMILL METHOD"}
@@ -330,7 +457,15 @@ export default function CheckoutPage() {
 
             {/* Garantia de 30 dias */}
             <div className="bg-zinc-900/20 border border-zinc-900 p-4.5 rounded-3xl flex gap-3.5 items-center">
-              <ShieldCheck className="w-8 h-8 text-brand-teal shrink-0" />
+              <div className="w-10 h-10 relative shrink-0">
+                <Image
+                  src={VISUAL_ASSETS.trust.guarantee}
+                  alt={locale === "pt-br" ? "Garantia de 30 Dias" : "30-Day Guarantee"}
+                  fill
+                  sizes="40px"
+                  className="object-contain"
+                />
+              </div>
               <div>
                 <h3 className="text-xs font-bold text-zinc-200">{t.offer.guaranteeTitle}</h3>
                 <p className="text-[10px] text-zinc-400 mt-1 leading-relaxed">
@@ -349,7 +484,74 @@ export default function CheckoutPage() {
                 {t.offer.ctaButton}
               </Button>
 
-              <div className="flex items-center justify-center gap-4 text-[9px] text-zinc-500 font-semibold uppercase tracking-wider mt-1">
+              {/* Selos de Confiança (Fase 3) */}
+              <div className="grid grid-cols-2 gap-2.5 mt-2 bg-zinc-900/10 border border-zinc-900/60 p-4.5 rounded-3xl">
+                {/* Selo 1: Plano Personalizado */}
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 relative shrink-0">
+                    <Image
+                      src={VISUAL_ASSETS.trust.personalisedPlan}
+                      alt={locale === "pt-br" ? "Plano Personalizado" : "Personalised Plan"}
+                      fill
+                      sizes="24px"
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-[9px] font-black text-zinc-300 leading-tight uppercase tracking-wider">
+                    {locale === "pt-br" ? "Plano Pessoal" : "Custom Plan"}
+                  </span>
+                </div>
+
+                {/* Selo 2: Acesso Instantâneo */}
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 relative shrink-0">
+                    <Image
+                      src={VISUAL_ASSETS.trust.instantAccess}
+                      alt={locale === "pt-br" ? "Acesso Instantâneo" : "Instant Delivery"}
+                      fill
+                      sizes="24px"
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-[9px] font-black text-zinc-300 leading-tight uppercase tracking-wider">
+                    {locale === "pt-br" ? "Entrega Rápida" : "Instant Access"}
+                  </span>
+                </div>
+
+                {/* Selo 3: Garantia */}
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 relative shrink-0">
+                    <Image
+                      src={VISUAL_ASSETS.trust.guarantee}
+                      alt={locale === "pt-br" ? "Garantia de 30 Dias" : "30-Day Guarantee"}
+                      fill
+                      sizes="24px"
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-[9px] font-black text-zinc-300 leading-tight uppercase tracking-wider">
+                    {locale === "pt-br" ? "Garantia 30 D" : "30D Guarantee"}
+                  </span>
+                </div>
+
+                {/* Selo 4: Pagamento Seguro */}
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 relative shrink-0">
+                    <Image
+                      src={VISUAL_ASSETS.trust.securePayment}
+                      alt={locale === "pt-br" ? "Pagamento Seguro" : "Secure Checkout"}
+                      fill
+                      sizes="24px"
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-[9px] font-black text-zinc-300 leading-tight uppercase tracking-wider">
+                    {locale === "pt-br" ? "Compra Segura" : "Secure Pay"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center gap-4 text-[9px] text-zinc-500 font-semibold uppercase tracking-wider mt-1.5">
                 <span className="flex items-center gap-1">
                   <Lock className="w-3 h-3 text-brand-teal" /> {t.offer.secureCheckout}
                 </span>
